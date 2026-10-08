@@ -1,0 +1,26 @@
+# NeMo Guardrails wiring for the Track 4 citation rail (illustrative).
+#
+# This config runs the same two checks as ../citation_rail.py as an OUTPUT rail:
+# after the agent drafts an answer, the `check_citations` action inspects every
+# claim's (doc_id, span_start, span_end) against the frozen corpus and the task
+# cutoff_date, and the flow rejects the draft if any finding comes back.
+#
+# The rail is advisory and participant-side: it reduces YOUR gate failures.
+# The competition's embargo and faithfulness gates are deterministic
+# organizer-side code and are the authority on every submission.
+#
+# Requires: pip install nemoguardrails   (NOT needed for demo.py, which calls
+# the pure-stdlib checks in citation_rail.py directly.)
+
+instructions:
+  - type: general
+    content: |
+      You are a Track 4 analysis agent. Every claim you output must cite a
+      document from the frozen corpus with an exact (doc_id, span_start,
+      span_end) span, and the cited document's doc_date must be on or before
+      the task cutoff_date.
+
+rails:
+  output:
+    flows:
+      - check citation rail

@@ -1,0 +1,99 @@
+name: Build and Push Agenthon 2026 Images
+
+on:
+  push:
+    paths:
+      - 'agenthon_2026/**'
+      - '.github/workflows/build-agenthon-images.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # -------------------------------------------------------------
+      # Track 1: Coding
+      # -------------------------------------------------------------
+      - name: Build & Push Track 1 (Coding)
+        id: build_t1
+        uses: docker/build-push-action@v5
+        with:
+          context: agenthon_2026/track1_coding
+          file: agenthon_2026/track1_coding/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ghcr.io/tokennomics/openvault-track1-coding:latest
+
+      # -------------------------------------------------------------
+      # Track 2: Forecasting
+      # -------------------------------------------------------------
+      - name: Build & Push Track 2 (Forecasting)
+        id: build_t2
+        uses: docker/build-push-action@v5
+        with:
+          context: agenthon_2026/track2_forecasting
+          file: agenthon_2026/track2_forecasting/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ghcr.io/tokennomics/openvault-track2-forecasting:latest
+
+      # -------------------------------------------------------------
+      # Track 3: Simulation
+      # -------------------------------------------------------------
+      - name: Build & Push Track 3 (Simulation)
+        id: build_t3
+        uses: docker/build-push-action@v5
+        with:
+          context: agenthon_2026/track3_simulation
+          file: agenthon_2026/track3_simulation/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ghcr.io/tokennomics/openvault-track3-simulation:latest
+
+      # -------------------------------------------------------------
+      # Track 4: Explainability
+      # -------------------------------------------------------------
+      - name: Build & Push Track 4 (Explainability)
+        id: build_t4
+        uses: docker/build-push-action@v5
+        with:
+          context: agenthon_2026/track4_explainability
+          file: agenthon_2026/track4_explainability/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ghcr.io/tokennomics/openvault-track4-explainability:latest
+
+      # -------------------------------------------------------------
+      # Summary with exact sha256 digests
+      # -------------------------------------------------------------
+      - name: Output Image Digests
+        run: |
+          echo "## Agenthon 2026 Pinned Image Digests" >> $GITHUB_STEP_SUMMARY
+          echo "| Track | Image Reference | Pinned Digest |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Track 1 Coding | \`ghcr.io/tokennomics/openvault-track1-coding\` | \`${{ steps.build_t1.outputs.digest }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Track 2 Forecasting | \`ghcr.io/tokennomics/openvault-track2-forecasting\` | \`${{ steps.build_t2.outputs.digest }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Track 3 Simulation | \`ghcr.io/tokennomics/openvault-track3-simulation\` | \`${{ steps.build_t3.outputs.digest }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Track 4 Explainability | \`ghcr.io/tokennomics/openvault-track4-explainability\` | \`${{ steps.build_t4.outputs.digest }}\` |" >> $GITHUB_STEP_SUMMARY
+          
+          echo "Track 1 Digest: ${{ steps.build_t1.outputs.digest }}"
+          echo "Track 2 Digest: ${{ steps.build_t2.outputs.digest }}"
+          echo "Track 3 Digest: ${{ steps.build_t3.outputs.digest }}"
+          echo "Track 4 Digest: ${{ steps.build_t4.outputs.digest }}"

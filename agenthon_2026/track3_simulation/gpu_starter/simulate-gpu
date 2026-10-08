@@ -1,0 +1,11 @@
+#!/bin/sh
+# Track 3 submission CLI shim for the GPU starter.
+#
+# It does what a real accelerated submission should do: verify that the accelerated helpers still
+# reproduce the CPU reference bit-for-bit BEFORE running the simulation, then run it. If the
+# exactness self-check fails the image exits non-zero rather than emitting a trace that the
+# Tier-A gate would reject. Self-check output goes to stderr so it never pollutes the events JSON
+# the adapter prints on stdout.
+set -e
+python3 /app/gpu_starter/gpu_kernel_example.py >&2
+exec python -m abides_fork.simulate "$@"

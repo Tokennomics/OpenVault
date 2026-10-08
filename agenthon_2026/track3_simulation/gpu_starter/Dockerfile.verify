@@ -1,0 +1,23 @@
+# Gate-verification image for the GPU starter.
+#
+# `Dockerfile` (next to this file) is the participant-facing target: an NVIDIA CUDA runtime base
+# with CuPy vendored, pinned to the eval box. This file is the fast local proof that the starter is
+# GATE-COMPATIBLE: it layers the same helper module and the same self-checking `simulate` shim onto
+# the already-built Track 3 baseline, so `verify_gate.sh` can run it against a real public unit and
+# confirm the trace is still bit-identical to the reference, with no GPU required.
+#
+# BASE_IMAGE is the baseline built from ../Dockerfile. The default is the tag that build
+# actually produces (`docker build --platform=linux/amd64 -t track3-abides-baseline:latest
+# baselines/`), so this file resolves after the documented build and nothing else. It previously
+# defaulted to an organizer-internal tag no published command creates.
+ARG BASE_IMAGE=track3-abides-baseline:latest
+FROM ${BASE_IMAGE}
+
+COPY gpu_kernel_example.py /opt/gpu_starter/gpu_kernel_example.py
+COPY simulate-gpu /usr/local/bin/simulate
+RUN chmod +x /usr/local/bin/simulate
+
+# Fail the build if the accelerated helpers ever stop matching the CPU reference.
+RUN python /opt/gpu_starter/gpu_kernel_example.py
+
+CMD ["simulate", "--help"]

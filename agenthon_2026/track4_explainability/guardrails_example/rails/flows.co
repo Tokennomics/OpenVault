@@ -1,0 +1,8 @@
+define flow check citation rail
+  """Reject a draft answer whose citations fail the local date/shape rail."""
+  $findings = execute check_citations(answer=$bot_message)
+  if $findings
+    bot refuse with rail findings
+
+define bot refuse with rail findings
+  "Draft answer rejected by the local citation rail; see findings. Repair or drop the flagged claims and redraft."

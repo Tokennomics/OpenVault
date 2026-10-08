@@ -1,0 +1,9 @@
+# Keep the build context lean: only patches/, abides_fork/, and the simulate shim
+# are COPYed into the image.
+**/__pycache__/
+**/*.pyc
+**/.DS_Store
+README.md
+build_and_validate.sh
+Dockerfile
+.dockerignore
