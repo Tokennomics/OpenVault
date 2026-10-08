@@ -33,6 +33,8 @@ class Config:
             seed=int(os.environ.get("T4_SEED", "20260731")),
             top_k=int(os.environ.get("T4_TOP_K", "10")),
             timeout_s=float(os.environ.get("T4_MODEL_TIMEOUT_S", "60")),
-            max_retries=int(os.environ.get("T4_MODEL_RETRIES", "3")),
+            # House admission is capped per unit; avoid retrying a request and consuming
+            # multiple admissions for the same entity by default.
+            max_retries=int(os.environ.get("T4_MODEL_RETRIES", "1")),
             temperature=float(os.environ.get("T4_TEMPERATURE", "0")),
         )

@@ -7,7 +7,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --no-cache-dir \
-    numpy pandas scipy pyarrow scikit-learn pytest jsonschema requests httpx openai
+    numpy==2.1.3 \
+    pandas==2.2.3 \
+    scipy==1.15.2 \
+    pyarrow==18.1.0 \
+    scikit-learn==1.6.1 \
+    pytest==8.3.4 \
+    jsonschema==4.23.0 \
+    requests==2.32.3 \
+    httpx==0.28.1
 
 RUN mkdir -p /app/data /app/output /app/tests /logs/verifier /agent
 

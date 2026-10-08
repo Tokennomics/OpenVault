@@ -122,6 +122,7 @@ class HTTPModelClient:
             ],
             "temperature": self.config.temperature,
             "seed": self.config.seed,
+            "max_tokens": 2500,
         }
         headers = {"Content-Type": "application/json"}
         if self.config.model_token:
